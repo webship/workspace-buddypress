@@ -145,7 +145,7 @@ layer has them ([webship/workspace#729](https://github.com/webship/workspace/iss
 | The testing setup and the first features | Yes | Yes | Not yet run | Not yet run | Not yet run | Not yet run |
 | The step pack's examples, with the sample content (47 scenarios) | Yes | Yes | Not yet run | Not yet run | Not yet run | Not yet run |
 | Export and import the database | Yes | Yes | Not yet run | Not yet run | Not yet run | Not yet run |
-| The row in the dashboard, and remove | Not yet run | Not yet run | Not yet run | Not yet run | Not yet run | Not yet run |
+| The row in the dashboard, and remove | Yes | Yes | Not yet run | Not yet run | Not yet run | Not yet run |
 
 "Yes" means it was run on a real site of that runtime. A runtime "Not yet run" runs the same code (the WordPress
 plugin's builder on that runtime, then the same WP-CLI calls) and was not run yet; Podman runs the same code as Docker

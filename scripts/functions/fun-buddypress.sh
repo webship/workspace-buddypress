@@ -427,6 +427,29 @@ else:
 
 if src != before:
     open(cucumber_file, 'w').write(src)
+
+# The WordPress plugin's first feature says a visitor sees no toolbar; a community shows WordPress's toolbar to its
+# visitors too (BuddyPress's "Show the Toolbar for logged-out users", on by default, with its Log In and Register
+# links). Its scenario, as that plugin wrote it, gets the community's toolbar; a scenario a person changed is kept.
+site_feature = project + '/tests/features/site.feature'
+try:
+    feature = open(site_feature).read()
+except OSError:
+    feature = None
+if feature:
+    old = ("  Scenario: An anonymous visitor has no session\n"
+           "    Given I am an anonymous user\n"
+           "    And I am on the homepage\n"
+           "    Then I should not see the admin bar\n")
+    new = ("  # A community shows the toolbar to its visitors too (BuddyPress's \"Show the Toolbar for logged-out users\",\n"
+           "  # on by default): its Log In and Register links.\n"
+           "  Scenario: An anonymous visitor has no session, and the community's toolbar\n"
+           "    Given I am an anonymous user\n"
+           "    And I am on the homepage\n"
+           "    Then I should see the admin bar\n")
+    if old in feature:
+        open(site_feature, 'w').write(feature.replace(old, new))
+        print("  tests/features/site.feature: a visitor of a community has the toolbar")
 PYEOF
 
   # A first feature for the community, when the project has none: the directories, a profile, each account in its

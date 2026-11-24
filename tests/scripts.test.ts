@@ -226,6 +226,26 @@ test('the testing hook runs the WordPress plugin\'s part first, then adds the co
   assert.strictEqual(fs.readFileSync(path.join(p.dir, 'tests', 'features', 'community.feature'), 'utf8'), 'Feature: mine\n');
 });
 
+test('the visitor scenario of the WordPress plugin\'s first feature gets the community\'s toolbar, once; one a person changed is kept', () => {
+  const p = project();
+  const features = path.join(p.dir, 'tests', 'features');
+  fs.mkdirSync(features, { recursive: true });
+  const wordpress = 'Feature: The site\n\n  Scenario: An anonymous visitor has no session\n    Given I am an anonymous user\n    And I am on the homepage\n    Then I should not see the admin bar\n    And I should not be logged in\n';
+  fs.writeFileSync(path.join(features, 'site.feature'), wordpress);
+  const run = () => bash(`${WORDPRESS_PART}\ncd ${p.dir} && testing_configure_buddypress ${p.dir}`, { WORKSPACE_ROOT: p.root, WORKSPACE_SCRIPTS: p.scripts, doc_name: 'dev', PROJECT_NAME: 'site1' });
+  let r = run();
+  assert.strictEqual(r.status, 0, r.stderr + r.stdout);
+  const fitted = fs.readFileSync(path.join(features, 'site.feature'), 'utf8');
+  assert.match(fitted, /Scenario: An anonymous visitor has no session, and the community's toolbar\n    Given I am an anonymous user\n    And I am on the homepage\n    Then I should see the admin bar\n    And I should not be logged in\n/);
+  assert.doesNotMatch(fitted, /should not see the admin bar/);
+  r = run();
+  assert.strictEqual(fs.readFileSync(path.join(features, 'site.feature'), 'utf8'), fitted, 'a second setup changes nothing');
+  const mine = wordpress.replace('And I am on the homepage', 'And I am on the members directory');
+  fs.writeFileSync(path.join(features, 'site.feature'), mine);
+  r = run();
+  assert.strictEqual(fs.readFileSync(path.join(features, 'site.feature'), 'utf8'), mine, 'a scenario a person changed is kept');
+});
+
 test('without the WordPress plugin\'s hook, the testing hook writes the whole registry itself', () => {
   const p = project('plugin');
   const r = bash(`cd ${p.dir} && testing_configure_buddypress ${p.dir}`, { WORKSPACE_ROOT: p.root, WORKSPACE_SCRIPTS: p.scripts, doc_name: 'dev', PROJECT_NAME: 'site1' });
@@ -261,9 +281,12 @@ test('the first feature names no platform in a step, and no password; it is not 
   for (const s of steps) assert.doesNotMatch(s, /buddypress|wordpress|buddypress/i, s);
   assert.doesNotMatch(feature, /password "/);
   assert.doesNotMatch(feature, /user create|I register/i, 'a suite never creates an account');
-  // The WordPress plugin's hook writes tests/features/site.feature: this one goes beside it.
-  assert.match(fs.readFileSync(FUNCTIONS, 'utf8'), /tests\/features\/community\.feature/);
-  assert.doesNotMatch(fs.readFileSync(FUNCTIONS, 'utf8'), /tests\/features\/site\.feature/);
+  // The WordPress plugin's hook writes tests/features/site.feature: this one goes beside it, and the WordPress one is
+  // only fitted (its visitor scenario), never written by this plugin.
+  const functions = fs.readFileSync(FUNCTIONS, 'utf8');
+  assert.match(functions, /tests\/features\/community\.feature/);
+  assert.doesNotMatch(functions, /cp [^\n]*site\.feature/);
+  assert.match(functions, /site_feature = project \+ '\/tests\/features\/site\.feature'/);
 });
 
 // ---- The runtimes: DDEV as before, and Docker Compose, Podman, Kubernetes, Lando and Docksal through the core's layer ----

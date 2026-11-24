@@ -135,13 +135,13 @@ layer has them ([webship/workspace#729](https://github.com/webship/workspace/iss
 
 | | DDEV | Docker Compose | Kubernetes | Podman | Lando | Docksal |
 | --- | --- | --- | --- | --- | --- | --- |
-| Build with `--install --add-users --sample-content` | Yes | RT_DOCKER | RT_K8S | Not yet run | Not yet run | Not yet run |
-| The community and the administration; a login as the workspace account and the default accounts | Yes | RT_DOCKER | RT_K8S | Not yet run | Not yet run | Not yet run |
-| `cmd-tools-buddypress-community.sh` (what the community holds), and WP-CLI (`cmd-tools-wordpress-cli.sh`) | Yes | RT_DOCKER | RT_K8S | Not yet run | Not yet run | Not yet run |
-| Test users, cancelled and added | Yes | RT_DOCKER | RT_K8S | Not yet run | Not yet run | Not yet run |
-| Mail caught by Mailpit | Yes | RT_DOCKER | RT_K8S | Not yet run | Not yet run | Not yet run |
-| The testing setup and the first features | Yes | RT_DOCKER | RT_K8S | Not yet run | Not yet run | Not yet run |
-| The step pack's examples, with the sample content | Yes | RT_DOCKER | RT_K8S | Not yet run | Not yet run | Not yet run |
+| Build with `--install --add-users --sample-content` | Yes | Not yet run | Not yet run | Not yet run | Not yet run | Not yet run |
+| The community and the administration; a login as the workspace account and the default accounts | Yes | Not yet run | Not yet run | Not yet run | Not yet run | Not yet run |
+| `cmd-tools-buddypress-community.sh` (what the community holds), and WP-CLI (`cmd-tools-wordpress-cli.sh`) | Yes | Not yet run | Not yet run | Not yet run | Not yet run | Not yet run |
+| Test users, cancelled and added | Yes | Not yet run | Not yet run | Not yet run | Not yet run | Not yet run |
+| Mail caught by Mailpit | Yes | Not yet run | Not yet run | Not yet run | Not yet run | Not yet run |
+| The testing setup and the first features | Yes | Not yet run | Not yet run | Not yet run | Not yet run | Not yet run |
+| The step pack's examples, with the sample content | Yes | Not yet run | Not yet run | Not yet run | Not yet run | Not yet run |
 
 "Yes" means it was run on a real site of that runtime. A runtime "Not yet run" runs the same code (the WordPress
 plugin's builder on that runtime, then the same WP-CLI calls) and was not run yet.
@@ -246,8 +246,11 @@ the WordPress one and loads it itself), adds the tags that keep the pack's asser
 run, the mail catcher of the project (`mailUrl`), the handles of the community's accounts (with the addresses the mail
 steps read and the names the community shows; overridable with `WP_<HANDLE>_USER` and `WP_<HANDLE>_PASSWORD`) in the
 users registry, and `tests/features/community.feature` (the directories, each account's profile, an empty update
-refused); it makes sure the default accounts are on the site. It is idempotent: a second run adds what is missing and
-keeps what was changed.
+refused); it makes sure the default accounts are on the site. The WordPress plugin's first feature says a visitor sees
+no toolbar, and a community shows WordPress's toolbar to its visitors too (BuddyPress's "Show the Toolbar for logged-out
+users", on by default, with its Log In and Register links): its visitor scenario, as that plugin wrote it, is fitted to
+the community ("Then I should see the admin bar"); a scenario you changed is kept. It is idempotent: a second run adds
+what is missing and keeps what was changed.
 
 ## The AI items
 

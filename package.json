@@ -1,0 +1,104 @@
+{
+  "name": "@webship.co/workspace-buddypress",
+  "version": "1.0.0",
+  "description": "BuddyPress for Webship Workspace, on top of its WordPress plugin: the builder (`cmd-buddypress-project.sh`) in every sites folder, a community with the components it uses, the default accounts (one per place in the community), the sample content (profiles, friendships, groups, updates, a message), the community's tool (`cmd-tools-buddypress-community.sh`), the BuddyPress step pack wired into the testing setup next to the WordPress one, and its AI items in their folders: two agents, a skill, a command and two prompts.",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "license": "ISC",
+  "engines": {
+    "node": ">=24"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webship/workspace-buddypress.git"
+  },
+  "files": [
+    "dist/src",
+    "ai",
+    "commands",
+    "features",
+    "scripts",
+    "testing",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepare": "npm run build",
+    "test": "npm run build && node --test dist/tests/*.test.js",
+    "lint": "tsc -p tsconfig.json --noEmit"
+  },
+  "workspacePlugin": {
+    "name": "buddypress",
+    "label": "BuddyPress",
+    "needs": [
+      [
+        "dev",
+        "test",
+        "sandboxes",
+        "demos"
+      ],
+      "wordpress",
+      "ai-agents",
+      "ai-skills",
+      "ai-commands",
+      "ai-prompts"
+    ],
+    "commands": {
+      "types": [
+        "sites"
+      ],
+      "workspaces": [
+        "dev",
+        "test",
+        "sandboxes",
+        "demos"
+      ],
+      "files": [
+        "commands/cmd-buddypress-project.sh",
+        "commands/cmd-tools-buddypress-community.sh"
+      ]
+    },
+    "scripts": {
+      "functions": [
+        "scripts/functions/fun-buddypress.sh"
+      ],
+      "args": [
+        "scripts/args/arg-buddypress.sh",
+        "scripts/args/arg-buddypress-community.sh"
+      ],
+      "machine": [
+        "testing/community.feature",
+        "scripts/community-site.php"
+      ]
+    },
+    "ai": {
+      "agents": [
+        "ai/agents/buddypress-site-builder.md",
+        "ai/agents/buddypress-tester.md"
+      ],
+      "skills": [
+        "ai/skills/buddypress-scenarios"
+      ],
+      "commands": [
+        "ai/commands/buddypress-test.md"
+      ],
+      "prompts": [
+        "ai/prompts/buddypress-build-and-test.md",
+        "ai/prompts/buddypress-groups-round.md"
+      ]
+    },
+    "features": [
+      "features/buddypress.feature",
+      "features/buddypress-runtimes.feature"
+    ],
+    "featuresSite": "cmd-buddypress-project.sh ci-buddypress --install --add-users --sample-content --runtime docker"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@webship.co/workspace-plugin-api": "^1.0.11",
+    "typescript": "^5.9.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

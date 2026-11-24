@@ -12,6 +12,7 @@
  *                                                the profile fields of the accounts come back
  *   wp eval-file community-site.php names        only the names the community shows for the accounts
  *   wp eval-file community-site.php status       say what the community holds
+ *   wp eval-file community-site.php counts       the counts a test run must leave as it found them (CI compares them)
  *
  * Everything is made with the plugin's own functions (groups_create_group, friends_add_friend, bp_activity_post_update,
  * messages_new_message, xprofile_set_field_data), so the counts, the notifications and the "last active" of every
@@ -457,6 +458,47 @@ function webship_status() {
 	echo 'updates: ' . count( $updates['activities'] ) . "\n";
 }
 
+/**
+ * What a run must leave as it found it, one count a line, the same on every run of the same site: the activity by type
+ * (hidden items and comments included; last_activity is one row a member, updated in place), each account's
+ * notifications (and how many unread), unread messages, friends, groups and favorites, and each group's members. CI
+ * compares it before and after the suite.
+ */
+function webship_counts() {
+	global $wpdb;
+	$bp = buddypress();
+	$lines = array();
+	$lines[] = 'activity: ' . (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$bp->activity->table_name}" );
+	foreach ( $wpdb->get_results( "SELECT type, COUNT(*) AS n FROM {$bp->activity->table_name} GROUP BY type ORDER BY type" ) as $row ) {
+		$lines[] = "activity {$row->type}: {$row->n}";
+	}
+	foreach ( array_keys( webship_accounts() ) as $login ) {
+		$user_id = webship_user_id( $login );
+		if ( ! $user_id ) {
+			$lines[] = "{$login}: not on the site";
+			continue;
+		}
+		$notifications = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$bp->notifications->table_name} WHERE user_id = %d", $user_id ) );
+		$unread        = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$bp->notifications->table_name} WHERE user_id = %d AND is_new = 1", $user_id ) );
+		$lines[] = "{$login} notifications: {$notifications} ({$unread} unread)";
+		$lines[] = "{$login} unread messages: " . (int) BP_Messages_Thread::get_inbox_count( $user_id );
+		$lines[] = "{$login} friends: " . count( (array) friends_get_friend_user_ids( $user_id ) ) . ' (total_friend_count ' . (int) bp_get_user_meta( $user_id, 'total_friend_count', true ) . ')';
+		$groups = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$bp->groups->table_name_members} WHERE user_id = %d AND is_confirmed = 1 AND is_banned = 0", $user_id ) );
+		$lines[] = "{$login} groups: {$groups} (total_group_count " . (int) bp_get_user_meta( $user_id, 'total_group_count', true ) . ')';
+		$lines[] = "{$login} favorites: " . count( (array) bp_activity_get_user_favorites( $user_id ) );
+	}
+	foreach ( webship_groups() as $slug => $group ) {
+		$group_id = (int) groups_get_id( $slug );
+		if ( ! $group_id ) {
+			$lines[] = "group {$slug}: not on the site";
+			continue;
+		}
+		$members = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$bp->groups->table_name_members} WHERE group_id = %d AND is_confirmed = 1 AND is_banned = 0", $group_id ) );
+		$lines[] = "group {$slug}: {$members} members (total_member_count " . (int) groups_get_groupmeta( $group_id, 'total_member_count' ) . ')';
+	}
+	echo implode( "\n", $lines ) . "\n";
+}
+
 wp_set_current_user( webship_admin_id() );
 
 switch ( $webship_mode ) {
@@ -488,7 +530,10 @@ switch ( $webship_mode ) {
 	case 'status':
 		webship_status();
 		break;
+	case 'counts':
+		webship_counts();
+		break;
 	default:
-		fwrite( STDERR, "Unknown mode {$webship_mode}: content, reset, names or status.\n" );
+		fwrite( STDERR, "Unknown mode {$webship_mode}: content, reset, names, status or counts.\n" );
 		exit( 1 );
 }

@@ -83,6 +83,7 @@ test('the functions carry the names the core\'s tools look for, and never write 
   assert.match(src, /wp rewrite structure '\/%postname%\/'/, 'pretty addresses, which the community needs');
   assert.match(src, /wp rewrite flush/, 'the rules written again: a plugin activated from the command line does not write them');
   assert.match(src, /bp_version_updater\(\);/, 'the plugin\'s own install, which a plugin activated from the command line leaves to the administration');
+  assert.match(src, /bp_version_updater\(\); delete_transient\( "_bp_activation_redirect" \);/, 'and the activation\'s welcome screen taken away, or the first request of the administration (a visitor\'s activity stream too) goes there');
   assert.match(src, /wp bp component activate/, 'the components, with the plugin\'s own command');
   assert.match(src, /users_can_register 1/, 'registration open, so the registration page answers');
   assert.match(src, /buddypress_community_site content/, 'the sample content');

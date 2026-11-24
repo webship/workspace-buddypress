@@ -111,7 +111,9 @@ builder makes the project (of the type `wordpress`) and installs the site; the c
 settings, the builder writes none. A project of the same name is deleted first.
 
 A plugin activated from WP-CLI leaves its install to the first page of the administration, which would then turn the
-components back to their defaults: the builder runs the plugin's install itself first (`bp_version_updater()`).
+components back to their defaults: the builder runs the plugin's install itself first (`bp_version_updater()`). Its
+activation also asks for a welcome screen: for 30 seconds, the first request of the administration goes there, even
+a visitor's request for the activity stream, which then stays empty. The builder takes that request away too.
 
 Nothing paid and no account anywhere: the free plugin from the plugin directory, the theme WordPress installs with,
 and content written by the plugin's own functions.

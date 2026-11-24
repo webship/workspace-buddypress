@@ -197,7 +197,10 @@ function buddypress_build() {
     || { echo "BuddyPress could not be installed." ; exit 1 ; } ;
   # The plugin's own install (its tables, its default components, its mail templates), which a plugin activated from
   # the command line leaves to the first page of the administration: there it would turn off the components below.
-  ddev wp eval 'bp_version_updater();' < /dev/null > /dev/null || { echo "BuddyPress could not be set up." ; exit 1 ; } ;
+  # And the welcome screen its activation asks for: for 30 seconds, the first request of the administration goes there
+  # instead, even a visitor's request for the activity stream (admin-ajax.php), whose list then never comes.
+  ddev wp eval 'bp_version_updater(); delete_transient( "_bp_activation_redirect" ); delete_transient( "_bp_is_new_install" );' < /dev/null > /dev/null \
+    || { echo "BuddyPress could not be set up." ; exit 1 ; } ;
   buddypress_components || { echo "The community's components could not be turned on." ; exit 1 ; } ;
 
   # The accounts before the content: each sample update, friendship and group is the work of an account.

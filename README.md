@@ -137,16 +137,19 @@ layer has them ([webship/workspace#729](https://github.com/webship/workspace/iss
 
 | | DDEV | Docker Compose | Kubernetes | Podman | Lando | Docksal |
 | --- | --- | --- | --- | --- | --- | --- |
-| Build with `--install --add-users --sample-content` | Yes | Not yet run | Not yet run | Not yet run | Not yet run | Not yet run |
-| The community and the administration; a login as the workspace account and the default accounts | Yes | Not yet run | Not yet run | Not yet run | Not yet run | Not yet run |
-| `cmd-tools-buddypress-community.sh` (what the community holds), and WP-CLI (`cmd-tools-wordpress-cli.sh`) | Yes | Not yet run | Not yet run | Not yet run | Not yet run | Not yet run |
-| Test users, cancelled and added | Yes | Not yet run | Not yet run | Not yet run | Not yet run | Not yet run |
-| Mail caught by Mailpit | Yes | Not yet run | Not yet run | Not yet run | Not yet run | Not yet run |
-| The testing setup and the first features | Yes | Not yet run | Not yet run | Not yet run | Not yet run | Not yet run |
-| The step pack's examples, with the sample content | Yes | Not yet run | Not yet run | Not yet run | Not yet run | Not yet run |
+| Build with `--install --add-users --sample-content` | Yes | Yes | Not yet run | Not yet run | Not yet run | Not yet run |
+| The community and the administration; a login as the workspace account and the default accounts | Yes | Yes | Not yet run | Not yet run | Not yet run | Not yet run |
+| `cmd-tools-buddypress-community.sh` (what the community holds), and WP-CLI (`cmd-tools-wordpress-cli.sh`) | Yes | Yes | Not yet run | Not yet run | Not yet run | Not yet run |
+| Test users, cancelled and added | Yes | Yes | Not yet run | Not yet run | Not yet run | Not yet run |
+| Mail caught by Mailpit (WordPress's lost-password mail) | Yes | Yes | Not yet run | Not yet run | Not yet run | Not yet run |
+| The testing setup and the first features | Yes | Yes | Not yet run | Not yet run | Not yet run | Not yet run |
+| The step pack's examples, with the sample content (47 scenarios) | Yes | Yes | Not yet run | Not yet run | Not yet run | Not yet run |
+| Export and import the database | Yes | Yes | Not yet run | Not yet run | Not yet run | Not yet run |
+| The row in the dashboard, and remove | Not yet run | Not yet run | Not yet run | Not yet run | Not yet run | Not yet run |
 
 "Yes" means it was run on a real site of that runtime. A runtime "Not yet run" runs the same code (the WordPress
-plugin's builder on that runtime, then the same WP-CLI calls) and was not run yet.
+plugin's builder on that runtime, then the same WP-CLI calls) and was not run yet; Podman runs the same code as Docker
+Compose.
 
 | Runtime | The site's address | What the project carries |
 | --- | --- | --- |
